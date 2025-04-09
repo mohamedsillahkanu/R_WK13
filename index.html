@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Week 13: Creating Your First R Package for Malaria Data Analysis</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <button class="sidebar-toggle" id="sidebar-toggle">Menu</button>
+    
+    <div class="sidebar" id="sidebar">
+        <h3>Course Navigation</h3>
+        <ul>
+            <li class="menu-item">
+                <a href="#week13">📅 Week 13: Creating R Packages</a>
+                <ul class="sub-menu">
+                    <li><a href="#package-basics">Package Basics</a></li>
+                    <li><a href="#package-structure">Package Structure</a></li>
+                    <li><a href="#building-package">Building the Package</a></li>
+                    <li><a href="#testing-package">Testing & Documentation</a></li>
+                    <li><a href="#publishing-package">Publishing Your Package</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    
+    <div class="container">
+        <h1 id="week13">📅 Week 13: Creating Your First R Package for Malaria Data Analysis</h1>
+        
+        <p>This week, we will:<br>
+        ✅ <strong>Learn the basics of R package development</strong><br>
+        ✅ <strong>Build a simple malaria data analysis package</strong><br>
+        ✅ <strong>Create proper documentation and vignettes</strong><br>
+        ✅ <strong>Test and share your package</strong></p>
+        
+        <hr>
+        
+        <h2 id="package-basics">1️⃣ R Package Development Basics</h2>
+        
+        <h3>Why Create R Packages?</h3>
+        <p>📌 <strong>R packages</strong> allow you to bundle functions, data, and documentation into a single, shareable unit. Creating packages for your malaria analysis work offers several benefits:</p>
+        
+        <ul>
+            <li><strong>Reproducibility</strong>: Package your analysis workflows for consistent reuse</li>
+            <li><strong>Collaboration</strong>: Share your methods with colleagues and the wider malaria research community</li>
+            <li><strong>Documentation</strong>: Formalize your work with proper documentation</li>
+            <li><strong>Integration</strong>: Build on and connect with other epidemiological tools in the R ecosystem</li>
+        </ul>
+        
+        <h3>Step 1: Setting Up Your Development Environment</h3>
+        <div class="r-code">
+            <pre><code>
+# Install required packages for package development
+install.packages(c("devtools", "roxygen2", "testthat", "knitr", "usethis"))
+library(devtools)
+library(roxygen2)
+library(usethis)
+
+# Check that your environment is ready for package development
+has_devel()
+            </code></pre>
+        </div>
+        
+        <div class="explanation">
+            <h4>🔍 Explanation:</h4>
+            <p>✔ <code>devtools</code> provides functions to simplify package development<br>
+            ✔ <code>roxygen2</code> generates documentation from specially formatted comments<br>
+            ✔ <code>testthat</code> enables unit testing for your package functions<br>
+            ✔ <code>knitr</code> creates vignettes (long-form documentation) for your package<br>
+            ✔ <code>usethis</code> automates many common package development tasks<br>
+            ✔ <code>has_devel()</code> checks if your system has the necessary tools for building packages</p>
+        </div>
+        
+        <hr>
+        
+        <h3>Step 2: Creating a New Package</h3>
+        <div class="r-code">
+            <pre><code>
+# Create a new package named "malariaAnalytics"
+usethis::create_package("malariaAnalytics")
+
+# This will:
+# 1. Create a new directory called "malariaAnalytics"
+# 2. Initialize it as an R package
+# 3. Open it as a new RStudio project (if you're using RStudio)
+
+# Set up package metadata
+usethis::use_description(
+  fields = list(
+    Title = "Tools for Malaria Data Analysis and Visualization",
+    Description = "A collection of functions for analyzing and visualizing malaria surveillance data, including time series analysis, outbreak detection, and risk mapping.",
+    `Authors@R` = 'person("Your", "Name", email = "your.email@example.com", role = c("aut", "cre"))',
+    License = "MIT"
+  )
+)
+
+# Add package dependencies
+usethis::use_package("dplyr")
+usethis::use_package("ggplot2")
+usethis::use_package("zoo")
+usethis::use_package("stats")
+            </code></pre>
+        </div>
+        
+        <div class="explanation">
+            <h4>🔍 Explanation:</h4>
+            <p>✔ <code>create_package()</code> initializes a new R package with the basic directory structure<br>
+            ✔ <code>use_description()</code> sets up the package metadata in the DESCRIPTION file<br>
+            ✔ <code>use_package()</code> adds dependencies to your package (packages your package will use)<br>
+            ✔ The DESCRIPTION file contains essential metadata about your package<br>
+            ✔ The "MIT" license is a permissive open-source license suitable for most research software</p>
+        </div>
+        
+        <hr>
+        
+        <h2 id="package-structure">2️⃣ Package Structure for Malaria Data Analysis</h2>
+        
+        <h3>Step 1: Creating the Package Directory Structure</h3>
+        <div class="r-code">
+            <pre><code>
+# Create directories for data and vignettes
+usethis::use_data_raw()    # For scripts to prepare package data
+usethis::use_vignette("malariaAnalytics")  # For long-form documentation
+usethis::use_testthat()    # For unit tests
+usethis::use_news_md()     # For release notes/changelog
+
+# Set up README file
+usethis::use_readme_md()
+
+# Set up GitHub repository (optional)
+usethis::use_git()
+# usethis::use_github()  # Uncomment to also create a GitHub repo
+            </code></pre>
+        </div>
+        
+        <div class="explanation">
+            <h4>🔍 Explanation:</h4>
+            <p>✔ <code>use_data_raw()</code> creates a data-raw directory for data preparation scripts<br>
+            ✔ <code>use_vignette()</code> sets up a template for a package vignette<br>
+            ✔ <code>use_testthat()</code> initializes the testing infrastructure<br>
+            ✔ <code>use_readme_md()</code> creates a README file to describe your package<br>
+            ✔ <code>use_git()</code> initializes a Git repository for version control<br>
+            ✔ Each of these functions creates the necessary files and directories with templates</p>
+        </div>
+        
+        <hr>
+        
+        <h3>Step 2: Adding Sample Malaria Data to Your Package</h3>
+        <div class="r-code">
+            <pre><code>
+# Create a script to prepare the sample data
+# File: data-raw/sample_malaria_data.R
+
+# Generate synthetic malaria case data
+set.seed(123)
+sample_malaria_data <- data.frame(
+  date = seq(as.Date("2018-01-01"), as.Date("2022-12-31"), by = "month"),
+  stringsAsFactors = FALSE
+)
+
+# Add columns
+sample_malaria_data$year <- as.integer(format(sample_malaria_data$date, "%Y"))
+sample_malaria_data$month <- as.integer(format(sample_malaria_data$date, "%m"))
+sample_malaria_data$cases <- round(
+  50 + 30 * sin(2 * pi * (sample_malaria_data$month / 12)) + 
+  sample_malaria_data$year * 5 + 
+  rnorm(nrow(sample_malaria_data), 0, 20)
+)
+sample_malaria_data$rainfall <- round(
+  100 + 80 * sin(2 * pi * ((sample_malaria_data$month - 1) / 12)) + 
+  rnorm(nrow(sample_malaria_data), 0, 30)
+)
+sample_malaria_data$temperature <- round(
+  25 + 5 * sin(2 * pi * ((sample_malaria_data$month - 6) / 12)) + 
+  rnorm(nrow(sample_malaria_data), 0, 1.5),
+  1
+)
+
+# Add regions
+regions <- c("North", "South", "East", "West", "Central")
+regional_data <- lapply(regions, function(region) {
+  region_data <- sample_malaria_data
+  region_data$region <- region
+  
+  # Add regional variations
+  modifier <- switch(region,
+                    "North" = 0.8,
+                    "South" = 1.2,
+                    "East" = 1.0,
+                    "West" = 0.9,
+                    "Central" = 1.4)
+  
+  region_data$cases <- round(region_data$cases * modifier)
+  region_data$rainfall <- round(region_data$rainfall * (1 + (modifier - 1) / 2))
+  
+  return(region_data)
+})
+
+sample_malaria_data <- do.call(rbind, regional_data)
+
+# Save the data to the package
+usethis::use_data(sample_malaria_data, overwrite = TRUE)
+
+# Now run this script to generate and save the data:
+# source("data-raw/sample_malaria_data.R")
+            </code></pre>
+        </div>
+        
+        <div class="explanation">
+            <h4>🔍 Explanation:</h4>
+            <p>✔ We've created synthetic malaria data including cases, rainfall, and temperature<br>
+            ✔ The data shows seasonal patterns (higher cases during rainy seasons)<br>
+            ✔ We've added regional variations to make the data more realistic<br>
+            ✔ <code>use_data()</code> saves the data in a format that can be included with your package<br>
+            ✔ Package data can be accessed with <code>data(sample_malaria_data)</code> once the package is installed</p>
+        </div>
+        
+        <hr>
+        
+        <h3>Step 3: Creating Core Functions for Malaria Analysis</h3>
+        <div class="r-code">
+            <pre><code>
+# Create R scripts for our package functions
+# File: R/outbreak_detection.R
+
+#' Detect Malaria Outbreaks Using Moving Average Method
+#'
+#' This function identifies potential malaria outbreaks by comparing 
+#' case counts to a threshold defined as a multiple of standard deviations
+#' above the moving average.
+#'
+#' @param data A data frame containing malaria case data.
+#' @param cases_col The name of the column containing case counts.
+#' @param date_col The name of the column containing dates.
+#' @param window_size The size of the moving window in time units.
+#' @param threshold_sd Number of standard deviations above the moving average.
+#' @param by_region Logical; whether to perform detection by region.
+#' @param region_col Name of the region column if by_region is TRUE.
+#'
+#' @return A data frame with original data plus outbreak detection columns:
+#'   moving_avg, moving_sd, threshold, and is_outbreak.
+#'
+#' @examples
+#' data(sample_malaria_data)
+#' outbreaks <- detect_outbreaks(sample_malaria_data, 
+#'                               cases_col = "cases", 
+#'                               date_col = "date",
+#'                               window_size = 12,
+#'                               by_region = TRUE,
+#'                               region_col = "region")
+#'
+#' @importFrom dplyr %>% group_by ungroup mutate filter arrange
+#' @importFrom zoo rollmean rollapply
+#' @export
+detect_outbreaks <- function(data, 
+                             cases_col = "cases", 
+                             date_col = "date",
+                             window_size = 12,
+                             threshold_sd = 2,
+                             by_region = FALSE,
+                             region_col = NULL) {
+  
+  # Input validation
+  if (!cases_col %in% names(data)) {
+    stop("Cases column '", cases_col, "' not found in data")
+  }
+  
+  if (!date_col %in% names(data)) {
+    stop("Date column '", date_col, "' not found in data")
+  }
+  
+  if (by_region && (!region_col %in% names(data))) {
+    stop("Region column '", region_col, "' not found in data")
+  }
+  
+  # Ensure data is arranged by date
+  data <- data[order(data[[date_col]]), ]
+  
+  if (by_region) {
+    # Apply detection by region
+    result <- data %>%
+      split(data[[region_col]]) %>%
+      lapply(function(region_data) {
+        region_data <- region_data[order(region_data[[date_col]]), ]
+        
+        # Calculate moving average and standard deviation
+        region_data$moving_avg <- zoo::rollmean(
+          region_data[[cases_col]], 
+          k = window_size, 
+          fill = NA, 
+          align = "right"
+        )
+        
+        region_data$moving_sd <- zoo::rollapply(
+          region_data[[cases_col]], 
+          width = window_size, 
+          FUN = stats::sd, 
+          fill = NA, 
+          align = "right"
+        )
+        
+        # Calculate threshold and detect outbreaks
+        region_data$threshold <- region_data$moving_avg + 
+          threshold_sd * region_data$moving_sd
+        
+        region_data$is_outbreak <- region_data[[cases_col]] > region_data$threshold
+        
+        return(region_data)
+      }) %>%
+      do.call(rbind, .)
+    
+  } else {
+    # Apply detection to entire dataset
+    data$moving_avg <- zoo::rollmean(
+      data[[cases_col]], 
+      k = window_size, 
+      fill = NA, 
+      align = "right"
+    )
+    
+    data$moving_sd <- zoo::rollapply(
+      data[[cases_col]], 
+      width = window_size, 
+      FUN = stats::sd, 
+      fill = NA, 
+      align = "right"
+    )
+    
+    # Calculate threshold and detect outbreaks
+    data$threshold <- data$moving_avg + threshold_sd * data$moving_sd
+    data$is_outbreak <- data[[cases_col]] > data$threshold
+    
+    result <- data
+  }
+  
+  return(result)
+}
+
+# File: R/seasonal_analysis.R
+
+#' Analyze Seasonal Patterns in Malaria Cases
+#'
+#' This function analyzes and visualizes seasonal patterns in malaria case data.
+#'
+#' @param data A data frame containing malaria case data.
+#' @param cases_col The name of the column containing case counts.
+#' @param date_col The name of the column containing dates.
+#' @param month_col Optional name of a column containing month values (1-12).
+#' @param by_region Logical; whether to perform analysis by region.
+#' @param region_col Name of the region column if by_region is TRUE.
+#' @param plot Logical; whether to generate plots.
+#'
+#' @return A list containing seasonal indices and optional plots.
+#'
+#' @examples
+#' data(sample_malaria_data)
+#' seasonal_analysis <- analyze_seasonality(sample_malaria_data, 
+#'                                        cases_col = "cases",
+#'                                        date_col = "date", 
+#'                                        month_col = "month",
+#'                                        by_region = TRUE, 
+#'                                        region_col = "region")
+#'
+#' @importFrom dplyr %>% group_by summarize mutate n
+#' @importFrom ggplot2 ggplot aes geom_line geom_ribbon theme_minimal labs
+#' @export
+analyze_seasonality <- function(data, 
+                               cases_col = "cases", 
+                               date_col = "date",
+                               month_col = NULL,
+                               by_region = FALSE,
+                               region_col = NULL,
+                               plot = TRUE) {
+  
+  # Input validation
+  if (!cases_col %in% names(data)) {
+    stop("Cases column '", cases_col, "' not found in data")
+  }
+  
+  # If month_col is not provided, extract from date_col
+  if (is.null(month_col)) {
+    if (!date_col %in% names(data)) {
+      stop("Date column '", date_col, "' not found in data")
+    }
+    data$month <- as.integer(format(data[[date_col]], "%m"))
+    month_col <- "month"
+  }
+  
+  if (by_region && (!region_col %in% names(data))) {
+    stop("Region column '", region_col, "' not found in data")
+  }
+  
+  # Function to calculate seasonal indices
+  calc_seasonal_indices <- function(df) {
+    # Calculate monthly averages
+    monthly_avg <- df %>%
+      dplyr::group_by(month = df[[month_col]]) %>%
+      dplyr::summarize(
+        avg_cases = mean(!!dplyr::sym(cases_col), na.rm = TRUE),
+        se = stats::sd(!!dplyr::sym(cases_col), na.rm = TRUE) / sqrt(dplyr::n()),
+        lower_ci = avg_cases - 1.96 * se,
+        upper_ci = avg_cases + 1.96 * se,
+        .groups = "drop"
+      )
+    
+    # Calculate annual average and seasonal indices
+    annual_avg <- mean(monthly_avg$avg_cases)
+    monthly_avg$seasonal_index <- monthly_avg$avg_cases / annual_avg
+    
+    return(monthly_avg)
+  }
+  
+  if (by_region) {
+    # Perform analysis by region
+    indices_by_region <- split(data, data[[region_col]]) %>%
+      lapply(calc_seasonal_indices)
+    
+    if (plot) {
+      plots <- lapply(names(indices_by_region), function(region) {
+        monthly_data <- indices_by_region[[region]]
+        
+        p <- ggplot2::ggplot(monthly_data, ggplot2::aes(x = month, y = avg_cases)) +
+          ggplot2::geom_line(size = 1, color = "blue") +
+          ggplot2::geom_ribbon(ggplot2::aes(ymin = lower_ci, ymax = upper_ci), 
+                              alpha = 0.2) +
+          ggplot2::labs(
+            title = paste("Seasonal Pattern of Malaria Cases -", region),
+            x = "Month",
+            y = "Average Cases"
+          ) +
+          ggplot2::scale_x_continuous(breaks = 1:12, labels = month.abb) +
+          ggplot2::theme_minimal()
+        
+        return(p)
+      })
+      
+      # Name the plots by region
+      names(plots) <- names(indices_by_region)
+      
+      return(list(
+        seasonal_indices = indices_by_region,
+        plots = plots
+      ))
+    } else {
+      return(list(seasonal_indices = indices_by_region))
+    }
+    
+  } else {
+    # Perform analysis on entire dataset
+    indices <- calc_seasonal_indices(data)
+    
+    if (plot) {
+      p <- ggplot2::ggplot(indices, ggplot2::aes(x = month, y = avg_cases)) +
+        ggplot2::geom_line(size = 1, color = "blue") +
+        ggplot2::geom_ribbon(ggplot2::aes(ymin = lower_ci, ymax = upper_ci), 
+                            alpha = 0.2) +
+        ggplot2::labs(
+          title = "Seasonal Pattern of Malaria Cases",
+          x = "Month",
+          y = "Average Cases"
+        ) +
+        ggplot2::scale_x_continuous(breaks = 1:12, labels = month.abb) +
+        ggplot2::theme_minimal()
+      
+      return(list(
+        seasonal_indices = indices,
+        plot = p
+      ))
+    } else {
+      return(list(seasonal_indices = indices))
+    }
+  }
+}
+
+# File: R/malaria_map.R
+
+#' Create Choropleth Maps of Malaria Data
+#'
+#' This function creates choropleth maps to visualize spatial patterns in malaria data.
+#'
+#' @param data A data frame containing malaria case data with region information.
+#' @param region_col The name of the column containing region names.
+#' @param value_col The name of the column containing values to map (e.g., cases).
+#' @param sf_object An sf (simple features) object with geometry for the regions.
+#' @param region_id_col The name of the column in sf_object that matches region_col in data.
+#' @param title Map title.
+#' @param legend_title Legend title.
+#' @param color_palette Color palette for the map (default: "YlOrRd").
+#'
+#' @return A ggplot2 object with the choropleth map.
+#'
+#' @examples
+#' # This example requires an sf object with region geometries
+#' # which is not included in the package
+#' \dontrun{
+#'   data(sample_malaria_data)
+#'   library(sf)
+#'   # Assuming you have a shapefile of regions
+#'   regions_sf <- st_read("path/to/regions_shapefile.shp")
+#'   
+#'   # Summarize cases by region
+#'   region_cases <- aggregate(cases ~ region, 
+#'                           data = sample_malaria_data, 
+#'                           FUN = sum)
+#'   
+#'   malaria_map <- create_choropleth(
+#'     data = region_cases,
+#'     region_col = "region",
+#'     value_col = "cases",
+#'     sf_object = regions_sf,
+#'     region_id_col = "region_name",
+#'     title = "Total Malaria Cases by Region"
+#'   )
+#'   
+#'   print(malaria_map)
+#' }
+#'
+#' @importFrom ggplot2 ggplot aes geom_sf scale_fill_distiller theme_minimal labs
+#' @export
+create_choropleth <- function(data,
+                              region_col,
+                              value_col,
+                              sf_object,
+                              region_id_col,
+                              title = "Malaria Data by Region",
+                              legend_title = NULL,
+                              color_palette = "YlOrRd") {
+  
+  # Input validation
+  if (!region_col %in% names(data)) {
+    stop("Region column '", region_col, "' not found in data")
+  }
+  
+  if (!value_col %in% names(data)) {
+    stop("Value column '", value_col, "' not found in data")
+  }
+  
+  if (!region_id_col %in% names(sf_object)) {
+    stop("Region ID column '", region_id_col, "' not found in sf_object")
+  }
+  
+  # Default legend title if not specified
+  if (is.null(legend_title)) {
+    legend_title <- value_col
+  }
+  
+  # Merge data with spatial features
+  sf_object$join_id <- sf_object[[region_id_col]]
+  data$join_id <- data[[region_col]]
+  
+  merged_data <- merge(sf_object, data, by = "join_id", all.x = TRUE)
+  
+  # Create choropleth map
+  map <- ggplot2::ggplot(merged_data) +
+    ggplot2::geom_sf(ggplot2::aes(fill = !!ggplot2::sym(value_col))) +
+    ggplot2::scale_fill_distiller(
+      palette = color_palette, 
+      direction = 1,
+      name = legend_title,
+      na.value = "grey80"
+    ) +
+    ggplot2::labs(title = title) +
+    ggplot2::theme_minimal()
+  
+  return(map)
+}
+            </code></pre>
+        </div>
+        
+        <div class="explanation">
+            <h4>🔍 Explanation:</h4>
+            <p>✔ We've created three core functions for malaria data analysis:<br>
+            ✔ <code>detect_outbreaks()</code>: Identifies potential malaria outbreaks using moving averages<br>
+            ✔ <code>analyze_seasonality()</code>: Analyzes and visualizes seasonal patterns in malaria cases<br>
+            ✔ <code>create_choropleth()</code>: Creates spatial visualizations of malaria data<br>
+            ✔ Each function includes <strong>roxygen2</strong> documentation comments (<code>#'</code>) that will be used to generate documentation<br>
+            ✔ The <code>@export</code> tag indicates that the function should be available to users of the package<br>
+            ✔ The <code>@importFrom</code> tags specify which functions from other packages are being used</p>
+        </div>
+        
+        <hr>
+        
+        <h2 id="building-package">3️⃣ Building and Documenting Your Package</h2>
+        
+        <h3>Step 1: Generate Documentation from Roxygen Comments</h3>
+        <div class="r-code">
+            <pre><code>
+# Generate documentation from roxygen comments
+devtools::document()
+
+# This will:
+# 1. Create man/*.Rd files for each documented function
+# 2. Update the NAMESPACE file with exports and imports
+# 3. Update the DESCRIPTION file with dependencies
+
+# Load the package to test functions
+devtools::load_all()
+
+# Test a function
+data(sample_malaria_data)
+outbreaks <- detect_outbreaks(
+  sample_malaria_data,
+  cases_col = "cases",
+  date_col = "date",
+  window_size = 12,
+  by_region = TRUE,
+  region_col = "region"
+)
+
+# View help for a function
+?detect_outbreaks
+            </code></pre>
+        </div>
+        
+        <div class="explanation">
+            <h4>🔍 Explanation:</h4>
+            <p>✔ <code>document()</code> processes the roxygen comments and generates documentation files<br>
+            ✔ <code>load_all()</code> simulates installing and loading the package<br>
+            ✔ This lets you test your functions as you develop them<br>
+            ✔ The <code>?</code> operator should now display the help page for your function<br>
+            ✔ Documentation is a crucial part of package development and helps users understand your functions</p>
+        </div>
+        
+        <hr>
+        
+        <h3>Step 2: Creating a Vignette</h3>
+        <div class="r-code">
+            <pre><code>
+# Edit the vignette template created earlier
+# File: vignettes/malariaAnalytics.Rmd
+
+---
+title: "Getting Started with malariaAnalytics"
+author: "Your Name"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting Started with malariaAnalytics}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(malariaAnalytics)
+```
+
+## Introduction
+
+The `malariaAnalytics` package provides tools for analyzing and visualizing malaria surveillance data. This vignette demonstrates the basic functionality of the package using sample data.
+
+## Sample Data
+
+The package includes a synthetic dataset of malaria cases with associated environmental variables:
+
+```{r}
+data(sample_malaria_data)
+head(sample_malaria_data)
+```
+
+## Outbreak Detection
+
+One of the key features of the package is the ability to identify potential outbreaks using statistical methods.
+
+```{r}
+# Detect outbreaks using the moving average method
+outbreaks <- detect_outbreaks(
+  sample_malaria_data,
+  cases_col = "cases",
+  date_col = "date",
+  window_size = 12,
+  by_region = TRUE,
+  region_col = "region"
+)
+
+# Check the results for a specific region
+north_outbreaks <- subset(outbreaks, region == "North")
+head(north_outbreaks[c("date", "cases", "moving_avg", "threshold", "is_outbreak")])
+
+# Count outbreaks by region
+table(outbreaks$region, outbreaks$is_outbreak)
+```
+
+## Seasonal Analysis
+
+We can analyze and visualize seasonal patterns in malaria cases:
+
+```{r fig.width=7, fig.height=5}
+# Analyze seasonality across all regions
+seasonal_results <- analyze_seasonality(
+  sample_malaria_data,
+  cases_col = "cases",
+  date_col = "date",
+  month_col = "month",
+  by_region = TRUE,
+  region_col = "region"
+)
+
+# Display seasonal indices for the North region
+seasonal_results$seasonal_indices$North
+
+# Plot the seasonal pattern for the North region
+seasonal_results$plots$North
+```
+
+The plot shows the average number of malaria cases by month, with 95% confidence intervals. The clear seasonal pattern demonstrates higher case counts during certain months, which is typical of malaria transmission dynamics in many regions.
+
+## Conclusion
+
+The `malariaAnalytics` package provides a set of tools that simplify common tasks in malaria data analysis. By combining outbreak detection, seasonal analysis, and spatial visualization, researchers and public health officials can gain valuable insights from their surveillance data.
+
+For more details on individual functions, please refer to the package documentation:
+
+```r
+?detect_outbreaks
+?analyze_seasonality
+?create_choropleth
+```
+            </code></pre>
+        </div>
+        
+        <div class="explanation">
+            <h4>🔍 Explanation:</h4>
+            <p>✔ Vignettes are long-form documentation that demonstrate how to use your package<br>
+            ✔ They typically include examples with code and output<br>
+            ✔ Vignettes are written in R Markdown and compiled to HTML<br>
+            ✔ This vignette shows how to use the core functions in the package<br>
+            ✔ Users can access vignettes after installation with <code>vignette("malariaAnalytics")</code><br>
+            ✔ Vignettes are particularly useful for demonstrating workflows and use cases</p>
+        </div>
+        
+        <hr>
+        
+        <h2 id="testing-package">4️⃣ Testing Your Package</h2>
+        
+        <h3>Step 1: Writing Unit Tests</h3>
+        <div class="r-code">
+            <pre><code>
+# Create test file for outbreak detection
+# File: tests/testthat/test-outbreak_detection.R
+
+test_that("outbreak detection works correctly", {
+  # Load sample data
+  data(sample_malaria_data)
+  
+  # Test with basic parameters
+  outbreaks <- detect_outbreaks(
+    sample_malaria_data,
+    cases_col = "cases",
+    date_col = "date",
+    window_size = 6,
+    threshold_sd = 2,
+    by_region = FALSE
+  )
+  
+  # Check that the function added the expected columns
+  expect_true("moving_avg" %in% names(outbreaks))
+  expect_true("moving_sd" %in% names(outbreaks))
+  expect_true("threshold" %in% names(outbreaks))
+  expect_true("is_outbreak" %in% names(outbreaks))
+  
+  # Check that the threshold is calculated correctly
+  expect_equal(
+    outbreaks$threshold[10],
+    outbreaks$moving_avg[10] + 2 * outbreaks$moving_sd[10]
+  )
+  
+  # Test with by_region = TRUE
+  regional_outbreaks <- detect_outbreaks(
+    sample_malaria_data,
+    cases_col = "cases",
+    date_col = "date",
+    window_size = 6,
+    threshold_sd = 2,
+    by_region = TRUE,
+    region_col = "region"
+  )
+  
+  # Check that results are returned for each region
+  expect_equal(
+    length(unique(regional_outbreaks$region)),
+    length(unique(sample_malaria_data$region))
+  )
+  
+  # Test error handling
+  expect_error(
+    detect_outbreaks(
+      sample_malaria_data,
+      cases_col = "nonexistent_column",
+      date_col = "date"
+    ),
+    "not found in data"
+  )
+})
+
+# Create test file for seasonal analysis
+# File: tests/testthat/test-seasonal_analysis.R
+
+test_that("seasonal analysis works correctly", {
+  # Load sample data
+  data(sample_malaria_data)
+  
+  # Test with basic parameters
+  seasonal <- analyze_seasonality(
+    sample_malaria_data,
+    cases_col = "cases",
+    date_col = "date",
+    plot = FALSE
+  )
+  
+  # Check the structure of the output
+  expect_type(seasonal, "list")
+  expect_true("seasonal_indices" %in% names(seasonal))
+  
+  # Check that seasonal indices are calculated for all months
+  indices <- seasonal$seasonal_indices
+  expect_equal(nrow(indices), 12)
+  expect_true(all(1:12 %in% indices$month))
+  
+  # Test with by_region = TRUE
+  regional_seasonal <- analyze_seasonality(
+    sample_malaria_data,
+    cases_col = "cases",
+    date_col = "date",
+    by_region = TRUE,
+    region_col = "region",
+    plot = TRUE
+  )
+  
+  # Check that results and plots are returned for each region
+  expect_equal(
+    length(regional_seasonal$seasonal_indices),
+    length(unique(sample_malaria_data$region))
+  )
+  
+  expect_equal(
+    length(regional_seasonal$plots),
+    length(unique(sample_malaria_data$region))
+  )
+  
+  # Test error handling
+  expect_error(
+    analyze_seasonality(
+      sample_malaria_data,
+      cases_col = "nonexistent_column"
+    ),
+    "not found in data"
+  )
+})
+            </code></pre>
+        </div>
+        
+        <div class="explanation">
+            <h4>🔍 Explanation:</h4>
+            <p>✔ Unit tests verify that your functions work as expected<br>
+            ✔ <code>testthat</code> is the standard framework for testing R packages<br>
+            ✔ Tests are organized into "test_that" blocks that focus on specific functionality<br>
+            ✔ <code>expect_*()</code> functions check that the results match expectations<br>
+            ✔ Testing error handling ensures the package fails gracefully<br>
+            ✔ Good test coverage increases confidence in your package's reliability</p>
+        </div>
+        
+        <hr>
+        
+        <h3>Step 2: Running Tests and Checking the Package</h3>
+        <div class="r-code">
+            <pre><code>
+# Run tests
+devtools::test()
+
+# Check the package for common problems
+devtools::check()
+
+# Build the package
+devtools::build()
+
+# Install the package locally
+devtools::install()
+            </code></pre>
+        </div>
+        
+        <div class="explanation">
+            <h4>🔍 Explanation:</h4>
+            <p>✔ <code>test()</code> runs all the unit tests and reports any failures<br>
+            ✔ <code>check()</code> performs a comprehensive check of the package, including:<br>
+            &nbsp;&nbsp;- Documentation completeness<br>
+            &nbsp;&nbsp;- Code issues and style<br>
+            &nbsp;&nbsp;- Package structure<br>
+            &nbsp;&nbsp;- Dependencies<br>
+            ✔ <code>build()</code> creates a package file (.tar.gz) that can be distributed<br>
+            ✔ <code>install()</code> installs the package on your system for testing<br>
+            ✔ Addressing all warnings and notes from <code>check()</code> is good practice before sharing your package</p>
+        </div>
+        
+        <hr>
+        
+        <h2 id="publishing-package">5️⃣ Publishing and Sharing Your Package</h2>
+        
+        <h3>Step 1: Polishing Your Package</h3>
+        <div class="r-code">
+            <pre><code>
+# Update the README.md file to provide an overview of your package
+# File: README.md
+
+# malariaAnalytics
+
+## Overview
+
+`malariaAnalytics` is an R package that provides tools for analyzing and visualizing malaria surveillance data. The package includes functions for:
+
+* Detecting potential malaria outbreaks
+* Analyzing seasonal patterns in malaria transmission
+* Creating choropleth maps of malaria data
+
+## Installation
+
+You can install the development version from GitHub with:
+
+```r
+# install.packages("devtools")
+devtools::install_github("yourusername/malariaAnalytics")
+```
+
+## Example
+
+```r
+library(malariaAnalytics)
+
+# Load sample data
+data(sample_malaria_data)
+
+# Detect outbreaks
+outbreaks <- detect_outbreaks(
+  sample_malaria_data,
+  cases_col = "cases",
+  date_col = "date",
+  window_size = 12,
+  by_region = TRUE,
+  region_col = "region"
+)
+
+# Analyze seasonality
+seasonal_results <- analyze_seasonality(
+  sample_malaria_data,
+  cases_col = "cases",
+  date_col = "date",
+  by_region = TRUE,
+  region_col = "region"
+)
+
+# View seasonal pattern for North region
+seasonal_results$plots$North
+```
+
+## Documentation
+
+For more details, see the package vignette:
+
+```r
+vignette("malariaAnalytics")
+```
+
+# Add a pkgdown site for better documentation
+usethis::use_pkgdown()
+pkgdown::build_site()
+            </code></pre>
+        </div>
+        
+        <div class="explanation">
+            <h4>🔍 Explanation:</h4>
+            <p>✔ A good README is essential for introducing your package to potential users<br>
+            ✔ It should include installation instructions, basic examples, and an overview of functionality<br>
+            ✔ <code>pkgdown</code> creates a website from your package documentation<br>
+            ✔ This makes your package more accessible and professional-looking<br>
+            ✔ Polishing these user-facing elements increases the likelihood of adoption</p>
+        </div>
+        
+        <hr>
+        
+        <h3>Step 2: Sharing on GitHub</h3>
+        <div class="r-code">
+            <pre><code>
+# If you haven't initialized Git yet
+usethis::use_git()
+
+# Create a GitHub repository
+usethis::use_github(private = FALSE)
+
+# This will:
+# 1. Create a new GitHub repository
+# 2. Push your package code to GitHub
+# 3. Set up the remote repository
+
+# You can also manually push to GitHub:
+# git add .
+# git commit -m "Initial package version"
+# git remote add origin https://github.com/yourusername/malariaAnalytics.git
+# git push -u origin master
+            </code></pre>
+        </div>
+        
+        <div class="explanation">
+            <h4>🔍 Explanation:</h4>
+            <p>✔ GitHub is the most common platform for sharing R packages<br>
+            ✔ <code>use_github()</code> automates the process of creating and connecting to a GitHub repository<br>
+            ✔ Users can install directly from GitHub using <code>devtools::install_github()</code><br>
+            ✔ GitHub also enables collaboration and version control<br>
+            ✔ GitHub Actions can be set up for continuous integration (automatically running tests)</p>
+        </div>
+        
+        <hr>
+        
+        <h3>Step 3: Preparing for CRAN (Optional)</h3>
+        <div class="r-code">
+            <pre><code>
+# Add CRAN comments
+usethis::use_cran_comments()
+
+# Edit the cran-comments.md file
+# File: cran-comments.md
+
+## R CMD check results
+0 errors | 0 warnings | 0 notes
+
+## Test environments
+* local Ubuntu 20.04, R 4.1.0
+* win-builder (devel and release)
+* macOS (GitHub Actions), R 4.1.0
+
+## Downstream dependencies
+There are currently no downstream dependencies for this package.
+
+# Check package with CRAN-specific checks
+devtools::check(cran = TRUE)
+
+# Submit to CRAN (only when ready!)
+# devtools::release()
+            </code></pre>
+        </div>
+        
+        <div class="explanation">
+            <h4>🔍 Explanation:</h4>
+            <p>✔ CRAN (Comprehensive R Archive Network) is the official repository for R packages<br>
+            ✔ CRAN has strict requirements for package submission<br>
+            ✔ <code>cran-comments.md</code> communicates important information to CRAN maintainers<br>
+            ✔ <code>check(cran = TRUE)</code> performs additional checks required by CRAN<br>
+            ✔ Publishing on CRAN makes your package easily installable with <code>install.packages()</code><br>
+            ✔ For specialized packages like this one, you might start with GitHub and consider CRAN later</p>
+        </div>
+        
+        <hr>
+        
+        <h3>Step 4: Setting Up Continuous Integration</h3>
+        <div class="r-code">
+            <pre><code>
+# Set up GitHub Actions for continuous integration
+usethis::use_github_action_check_standard()
+usethis::use_github_action("pkgdown")
+usethis::use_github_action("test-coverage")
+
+# This adds workflow files to .github/workflows/
+# These workflows will:
+# 1. Run R CMD check on multiple platforms
+# 2. Build and deploy a pkgdown site
+# 3. Calculate and report test coverage
+            </code></pre>
+        </div>
+        
+        <div class="explanation">
+            <h4>🔍 Explanation:</h4>
+            <p>✔ Continuous integration (CI) automatically tests your package when changes are pushed<br>
+            ✔ GitHub Actions provides free CI services for open-source projects<br>
+            ✔ <code>use_github_action_*()</code> functions set up standard CI workflows<br>
+            ✔ These workflows help catch issues early and on different platforms<br>
+            ✔ CI badges in your README show that your package is well-maintained</p>
+        </div>
+        
+        <hr>
+        
+        <h2>✅ Complete Package Structure</h2>
+        
+        <p>Your final malaria analytics package should have the following structure:</p>
+        
+        <pre>
+malariaAnalytics/
+├── .github/               # GitHub-specific files
+│   └── workflows/         # GitHub Actions workflows
+├── .gitignore             # Files to ignore in version control
+├── DESCRIPTION            # Package metadata
+├── LICENSE                # License information
+├── NAMESPACE              # Exports and imports
+├── NEWS.md                # Release notes/changelog
+├── R/                     # R source code
+│   ├── outbreak_detection.R
+│   ├── seasonal_analysis.R
+│   └── malaria_map.R
+├── README.md              # Package overview
+├── cran-comments.md       # Comments for CRAN submission
+├── data/                  # Package data
+│   └── sample_malaria_data.rda
+├── data-raw/              # Data preparation scripts
+│   └── sample_malaria_data.R
+├── man/                   # Documentation (generated)
+│   ├── analyze_seasonality.Rd
+│   ├── create_choropleth.Rd
+│   ├── detect_outbreaks.Rd
+│   └── sample_malaria_data.Rd
+├── tests/                 # Unit tests
+│   ├── testthat.R
+│   └── testthat/
+│       ├── test-outbreak_detection.R
+│       └── test-seasonal_analysis.R
+└── vignettes/             # Long-form documentation
+    └── malariaAnalytics.Rmd
+        </pre>
+        
+        <h2>✅ Summary of Week 13</h2>
+        <p>By the end of this week, you should be able to:<br>
+        ✔ <strong>Create a basic R package</strong> with custom functions for malaria data analysis<br>
+        ✔ <strong>Document your functions</strong> with roxygen2 comments<br>
+        ✔ <strong>Include data</strong> in your package<br>
+        ✔ <strong>Write unit tests</strong> to ensure functionality<br>
+        ✔ <strong>Create vignettes</strong> to demonstrate usage<br>
+        ✔ <strong>Share your package</strong> via GitHub<br>
+        ✔ <strong>Understand the steps</strong> for submitting a package to CRAN</p>
+        
+        <h3>Next Steps</h3>
+        <p>To continue expanding your R package development skills, consider:</p>
+        <ul>
+            <li><strong>Add more functions</strong> for advanced malaria analysis (e.g., spatial modeling, climate correlations)</li>
+            <li><strong>Integrate with other packages</strong> in the epidemiology and public health ecosystem</li>
+            <li><strong>Create interactive Shiny components</strong> that can be called from your package</li>
+            <li><strong>Implement parallel processing</strong> for computationally intensive analyses</li>
+            <li><strong>Develop an online course or workshop</strong> to teach others how to use your package</li>
+        </ul>
+        
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
